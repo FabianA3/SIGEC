@@ -4,6 +4,10 @@ from app.models import Rol, Usuario
 app = create_app()
 
 with app.app_context():
+
+    # Crear todas las tablas definidas en los modelos
+    db.create_all()
+
     roles_iniciales = [
         {
             "nombre": "Administrador",
@@ -33,7 +37,9 @@ with app.app_context():
 
     db.session.commit()
 
-    rol_admin = Rol.query.filter_by(nombre="Administrador").first()
+    rol_admin = Rol.query.filter_by(
+        nombre="Administrador"
+    ).first()
 
     admin_existente = Usuario.query.filter_by(
         correo="admin@sigec.local"
@@ -52,4 +58,4 @@ with app.app_context():
         db.session.add(administrador)
         db.session.commit()
 
-    print("Roles iniciales creados correctamente.")
+    print("Base de datos SIGEC inicializada correctamente.")
