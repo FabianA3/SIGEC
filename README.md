@@ -2,7 +2,7 @@
 
 SIGEC es un prototipo académico de un sistema web orientado a la gestión, seguimiento y control de información contractual. Permite administrar contratos, contratistas, pagos, documentos, novedades contractuales, alertas de vencimiento, usuarios y reportes desde una interfaz centralizada.
 
-El proyecto fue desarrollado para la asignatura **Arquitectura de Software**, aplicando principios de modularidad, separación de responsabilidades, bajo acoplamiento y mantenibilidad.
+El proyecto fue desarrollado para la asignatura **Arquitectura de Software**, aplicando principios de modularidad, separación de responsabilidades, bajo acoplamiento, mantenibilidad y escalabilidad.
 
 ## Funcionalidades principales
 
@@ -23,7 +23,9 @@ El proyecto fue desarrollado para la asignatura **Arquitectura de Software**, ap
 
 SIGEC utiliza una arquitectura web modular basada en Flask. La solución separa responsabilidades mediante controladores, modelos, repositorios, servicios, observadores, colas, plantillas y recursos estáticos.
 
-La persistencia local del prototipo se realiza mediante SQLite y SQLAlchemy como ORM.
+La persistencia se gestiona mediante SQLAlchemy como ORM. En el entorno de desarrollo local se utiliza SQLite, mientras que el entorno desplegado en la nube utiliza PostgreSQL 18 para garantizar la persistencia de los datos entre despliegues.
+
+El prototipo se encuentra desplegado en Render y utiliza Gunicorn como servidor WSGI. La conexión a PostgreSQL se configura mediante la variable de entorno `DATABASE_URL`.
 
 ## Patrones de diseño aplicados
 
@@ -33,7 +35,7 @@ Se utiliza para separar la representación de los datos, la interfaz de usuario 
 
 ### Repository
 
-Encapsula operaciones de acceso a datos y reduce el acoplamiento entre la lógica de la aplicación y la persistencia.
+Encapsula las operaciones de acceso a datos y reduce el acoplamiento entre la lógica de la aplicación y la persistencia.
 
 ### Observer
 
@@ -41,7 +43,9 @@ Se aplica al mecanismo de alertas contractuales. Cuando se evalúa un contrato p
 
 ### Queue-Based Load Leveling
 
-El prototipo incluye una cola de tareas en memoria para desacoplar la solicitud de generación de reportes de su procesamiento. Esta implementación tiene fines académicos y demostrativos; en un entorno productivo se utilizaría una cola persistente o administrada.
+El prototipo incluye una cola de tareas en memoria para desacoplar la solicitud de generación de reportes de su procesamiento.
+
+Esta implementación tiene fines académicos y demostrativos. En un entorno productivo de mayor escala se utilizaría una cola persistente o administrada.
 
 ## Tecnologías utilizadas
 
@@ -50,7 +54,11 @@ El prototipo incluye una cola de tareas en memoria para desacoplar la solicitud 
 - Flask-Login
 - Flask-SQLAlchemy
 - SQLAlchemy
-- SQLite
+- SQLite para desarrollo local
+- PostgreSQL 18 para el entorno desplegado
+- psycopg2-binary
+- Gunicorn
+- Render
 - Bootstrap 5
 - HTML y CSS
 - Pytest
@@ -71,6 +79,7 @@ SIGEC/
 ├── instance/
 ├── tests/
 ├── .gitignore
+├── inicializar_db.py
 ├── README.md
 ├── requirements.txt
 └── run.py
@@ -106,21 +115,36 @@ pip install -r requirements.txt
 
 ### 4. Configurar variables de entorno
 
-Crear un archivo `.env` en la raíz del proyecto y definir una clave secreta:
+Crear un archivo `.env` en la raíz del proyecto y definir las siguientes variables:
 
 ```env
 SECRET_KEY=una-clave-secreta
+DATABASE_URL=URL-de-conexion-a-postgresql
 ```
 
 El archivo `.env` no debe publicarse en el repositorio.
 
-### 5. Ejecutar SIGEC
+Para desarrollo local, si no se define `DATABASE_URL`, SIGEC utiliza SQLite automáticamente. En el entorno de Render, `DATABASE_URL` contiene la conexión a la base de datos PostgreSQL.
+
+### 5. Inicializar la base de datos
+
+```bash
+python inicializar_db.py
+```
+
+Este proceso crea las tablas requeridas por SIGEC y los datos iniciales necesarios para el funcionamiento del prototipo.
+
+### 6. Ejecutar SIGEC
 
 ```bash
 python run.py
 ```
 
-Luego acceder desde el navegador a la dirección indicada por Flask, normalmente `http://127.0.0.1:5000`.
+Luego acceder desde el navegador a la dirección indicada por Flask, normalmente:
+
+```text
+http://127.0.0.1:5000
+```
 
 ## Pruebas automatizadas
 
@@ -130,7 +154,18 @@ Para ejecutar las pruebas:
 python -m pytest tests/test_app.py -v
 ```
 
-Actualmente el proyecto cuenta con pruebas estratégicas sobre creación de la aplicación, autenticación, autorización por roles, Repository, Observer y cola de tareas.
+Actualmente el proyecto cuenta con **8 pruebas automatizadas estratégicas** relacionadas con:
+
+- Creación de la aplicación.
+- Protección de rutas mediante autenticación.
+- Inicio de sesión con credenciales válidas.
+- Rechazo de credenciales inválidas.
+- Autorización y restricciones según roles.
+- Funcionamiento del patrón Repository.
+- Funcionamiento del patrón Observer.
+- Funcionamiento de la cola de tareas.
+
+Las **8 pruebas se ejecutan satisfactoriamente** en el entorno de desarrollo.
 
 ## Roles del sistema
 
@@ -138,12 +173,68 @@ Actualmente el proyecto cuenta con pruebas estratégicas sobre creación de la a
 - **Funcionario:** gestión de contratistas, contratos, pagos, documentos, novedades, alertas y reportes según los permisos implementados.
 - **Supervisor:** acceso de consulta a contratos, novedades y alertas, con restricciones sobre operaciones administrativas.
 
+## Despliegue en la nube
+
+SIGEC se encuentra desplegado en **Render**.
+
+La arquitectura del entorno desplegado utiliza:
+
+```text
+Usuario
+   ↓
+Aplicación web SIGEC
+   ↓
+Gunicorn
+   ↓
+Flask
+   ↓
+SQLAlchemy
+   ↓
+PostgreSQL 18
+```
+
+La aplicación obtiene la cadena de conexión a PostgreSQL mediante la variable de entorno `DATABASE_URL`, evitando almacenar las credenciales de la base de datos directamente en el código fuente.
+
+El proceso de despliegue ejecuta la inicialización de la base de datos y posteriormente inicia la aplicación mediante Gunicorn.
+
+## Persistencia de datos
+
+En desarrollo local, SIGEC puede utilizar SQLite.
+
+En el entorno desplegado en Render se utiliza PostgreSQL 18 como sistema de gestión de base de datos persistente.
+
+La persistencia fue verificada mediante una prueba de redeploy:
+
+1. Se registró información de prueba en SIGEC.
+2. Se realizó un nuevo despliegue del servicio.
+3. Se volvió a acceder a la aplicación.
+4. La información registrada permaneció almacenada correctamente.
+
+Esta prueba permitió comprobar que los datos no dependen del sistema de archivos temporal de la instancia web.
+
 ## Estado del proyecto
 
-SIGEC se encuentra en fase de prototipo académico funcional. La versión actual utiliza SQLite y una cola de tareas en memoria para ejecución local. La arquitectura está preparada para continuar su adaptación a un entorno de despliegue en la nube.
+SIGEC se encuentra en fase de **prototipo académico funcional desplegado en la nube**.
 
-## Autor
+Actualmente dispone de:
 
-**Fabián Andrés Ariza**  
+- Arquitectura modular.
+- Autenticación y autorización por roles.
+- Gestión de información contractual.
+- Persistencia mediante PostgreSQL.
+- Alertas automáticas de vencimiento.
+- Generación de reportes.
+- Implementación de patrones de diseño.
+- Pruebas automatizadas.
+- Interfaz web responsive.
+- Despliegue funcional en Render.
+
+La cola de tareas utilizada por el patrón Queue-Based Load Leveling continúa siendo una implementación en memoria con fines académicos y demostrativos. En una implementación productiva de mayor escala podría reemplazarse por una solución de mensajería persistente o administrada.
+
+## Autores
+
+**Fabián Andrés Ariza**
+**Diego Duran**  
+**Ruth Duran**   
 Ingeniería de Software  
 Proyecto académico – Arquitectura de Software
