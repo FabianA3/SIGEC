@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Novedades contractuales | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Novedades contractuales</h1>
+        <p class="text-secondary mb-0">
+            Registro y consulta del historial de novedades asociadas a los contratos.
+        </p>
+    </div>
+
+    <a class="btn btn-outline-secondary"
+       href="{{ url_for('inicio') }}">
+        Volver al panel
+    </a>
+</div>
+
+
+{% if current_user.rol.nombre in ["Administrador", "Funcionario"] %}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Registrar novedad</h2>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-md-6">
+                <label for="contrato_id" class="form-label">
+                    Contrato
+                </label>
+
+                <select
+                    class="form-select"
+                    id="contrato_id"
+                    name="contrato_id"
+                    required
+                >
+                    <option value="">Seleccione...</option>
+
+                    {% for contrato in contratos %}
+                        <option value="{{ contrato.id }}">
+                            {{ contrato.numero_contrato }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="tipo" class="form-label">
+                    Tipo de novedad
+                </label>
+
+                <select
+                    class="form-select"
+                    id="tipo"
+                    name="tipo"
+                    required
+                >
+                    <option value="Suspensión">Suspensión</option>
+                    <option value="Reinicio">Reinicio</option>
+                    <option value="Prórroga">Prórroga</option>
+                    <option value="Adición">Adición</option>
+                    <option value="Cesión">Cesión</option>
+                    <option value="Terminación">Terminación</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="fecha" class="form-label">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    id="fecha"
+                    name="fecha"
+                    required
+                >
+            </div>
+
+
+            <div class="col-12">
+                <label for="descripcion" class="form-label">
+                    Descripción
+                </label>
+
+                <textarea
+                    class="form-control"
+                    id="descripcion"
+                    name="descripcion"
+                    rows="3"
+                    required
+                ></textarea>
+            </div>
+
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-dark">
+                    Registrar novedad
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endif %}
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h2 class="h5 mb-0">
+                Historial de novedades
+            </h2>
+
+            <span class="badge text-bg-secondary">
+                {{ novedades|length }} registros
+            </span>
+
+        </div>
+
+
+        {% if novedades %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Contrato</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for novedad in novedades %}
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ novedad.contrato.numero_contrato }}
+                        </td>
+
+                        <td>
+                            <span class="badge text-bg-light border">
+                                {{ novedad.tipo }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ novedad.fecha.strftime('%d/%m/%Y') }}
+                        </td>
+
+                        <td>
+                            {{ novedad.descripcion }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="alert alert-light border mb-0">
+                No hay novedades contractuales registradas.
+            </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

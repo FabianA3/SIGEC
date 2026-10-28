@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Alertas | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1 class="h3 mb-1">Alertas de contratos</h1>
+
+        <p class="text-secondary mb-0">
+            Seguimiento de alertas generadas automáticamente por el sistema.
+        </p>
+    </div>
+
+    <a
+        class="btn btn-outline-secondary"
+        href="{{ url_for('inicio') }}"
+    >
+        Volver al panel
+    </a>
+
+</div>
+
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h2 class="h5 mb-0">
+                Alertas registradas
+            </h2>
+
+            <span class="badge text-bg-secondary">
+                {{ alertas|length }} registros
+            </span>
+
+        </div>
+
+
+        {% if alertas %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Mensaje</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for alerta in alertas %}
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ alerta.tipo }}
+                        </td>
+
+
+                        <td>
+                            {{ alerta.mensaje }}
+                        </td>
+
+
+                        <td>
+
+                            {% if alerta.estado == "Pendiente" %}
+
+                                <span class="badge text-bg-warning">
+                                    Pendiente
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge text-bg-success">
+                                    {{ alerta.estado }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="text-end">
+
+                            {% if alerta.estado == "Pendiente"
+                                  and current_user.rol.nombre
+                                  in ["Administrador", "Funcionario"] %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'revisar_alerta',
+                                        id=alerta.id
+                                    ) }}"
+                                    class="d-inline"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-sm btn-outline-success"
+                                    >
+                                        Marcar como revisada
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <span class="text-secondary">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="alert alert-light border mb-0">
+                No hay alertas registradas.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

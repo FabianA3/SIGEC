@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Editar contratista | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Editar contratista</h1>
+        <p class="text-secondary mb-0">
+            Actualiza la información del contratista registrado en el sistema.
+        </p>
+    </div>
+
+    <a
+        class="btn btn-outline-secondary"
+        href="{{ url_for('contratistas') }}"
+    >
+        Volver a contratistas
+    </a>
+</div>
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-md-4">
+                <label for="tipo_documento" class="form-label">
+                    Tipo de documento
+                </label>
+
+                <select
+                    class="form-select"
+                    id="tipo_documento"
+                    name="tipo_documento"
+                    required
+                >
+                    <option
+                        value="CC"
+                        {% if contratista.tipo_documento == "CC" %}selected{% endif %}
+                    >
+                        Cédula de ciudadanía
+                    </option>
+
+                    <option
+                        value="NIT"
+                        {% if contratista.tipo_documento == "NIT" %}selected{% endif %}
+                    >
+                        NIT
+                    </option>
+
+                    <option
+                        value="CE"
+                        {% if contratista.tipo_documento == "CE" %}selected{% endif %}
+                    >
+                        Cédula de extranjería
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="col-md-4">
+                <label for="numero_documento" class="form-label">
+                    Número de documento
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="numero_documento"
+                    name="numero_documento"
+                    value="{{ contratista.numero_documento }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-4">
+                <label for="nombre_razon_social" class="form-label">
+                    Nombre o razón social
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="nombre_razon_social"
+                    name="nombre_razon_social"
+                    value="{{ contratista.nombre_razon_social }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="correo" class="form-label">
+                    Correo electrónico
+                </label>
+
+                <input
+                    type="email"
+                    class="form-control"
+                    id="correo"
+                    name="correo"
+                    value="{{ contratista.correo or '' }}"
+                >
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="telefono" class="form-label">
+                    Teléfono
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="telefono"
+                    name="telefono"
+                    value="{{ contratista.telefono or '' }}"
+                >
+            </div>
+
+
+            <div class="col-12 d-flex gap-2 pt-2">
+
+                <button type="submit" class="btn btn-dark">
+                    Guardar cambios
+                </button>
+
+                <a
+                    class="btn btn-outline-secondary"
+                    href="{{ url_for('contratistas') }}"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

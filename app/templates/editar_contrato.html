@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Editar contrato | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Editar contrato</h1>
+        <p class="text-secondary mb-0">
+            Actualiza la información contractual y el estado del contrato.
+        </p>
+    </div>
+
+    <a
+        class="btn btn-outline-secondary"
+        href="{{ url_for('contrato_controller.contratos') }}"
+    >
+        Volver a contratos
+    </a>
+</div>
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-md-6">
+                <label for="numero_contrato" class="form-label">
+                    Número de contrato
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="numero_contrato"
+                    name="numero_contrato"
+                    value="{{ contrato.numero_contrato }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="contratista_id" class="form-label">
+                    Contratista
+                </label>
+
+                <select
+                    class="form-select"
+                    id="contratista_id"
+                    name="contratista_id"
+                    required
+                >
+                    {% for contratista in contratistas %}
+                        <option
+                            value="{{ contratista.id }}"
+                            {% if contratista.id == contrato.contratista_id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ contratista.numero_documento }} -
+                            {{ contratista.nombre_razon_social }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="col-12">
+                <label for="objeto" class="form-label">
+                    Objeto contractual
+                </label>
+
+                <textarea
+                    class="form-control"
+                    id="objeto"
+                    name="objeto"
+                    rows="3"
+                    required
+                >{{ contrato.objeto }}</textarea>
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="valor" class="form-label">
+                    Valor
+                </label>
+
+                <input
+                    type="number"
+                    class="form-control"
+                    id="valor"
+                    name="valor"
+                    value="{{ contrato.valor }}"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="fecha_inicio" class="form-label">
+                    Fecha de inicio
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    id="fecha_inicio"
+                    name="fecha_inicio"
+                    value="{{ contrato.fecha_inicio.strftime('%Y-%m-%d') }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="fecha_terminacion" class="form-label">
+                    Fecha de terminación
+                </label>
+
+                <input
+                    type="date"
+                    class="form-control"
+                    id="fecha_terminacion"
+                    name="fecha_terminacion"
+                    value="{{ contrato.fecha_terminacion.strftime('%Y-%m-%d') }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-3">
+                <label for="estado" class="form-label">
+                    Estado
+                </label>
+
+                <select
+                    class="form-select"
+                    id="estado"
+                    name="estado"
+                    required
+                >
+                    <option
+                        value="Activo"
+                        {% if contrato.estado == "Activo" %}selected{% endif %}
+                    >
+                        Activo
+                    </option>
+
+                    <option
+                        value="Terminado"
+                        {% if contrato.estado == "Terminado" %}selected{% endif %}
+                    >
+                        Terminado
+                    </option>
+
+                    <option
+                        value="Suspendido"
+                        {% if contrato.estado == "Suspendido" %}selected{% endif %}
+                    >
+                        Suspendido
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="col-12 d-flex gap-2 pt-2">
+
+                <button type="submit" class="btn btn-dark">
+                    Guardar cambios
+                </button>
+
+                <a
+                    class="btn btn-outline-secondary"
+                    href="{{ url_for('contrato_controller.contratos') }}"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

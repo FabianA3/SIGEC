@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Contratistas | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Gestión de contratistas</h1>
+        <p class="text-secondary mb-0">
+            Registro y administración de contratistas vinculados al sistema.
+        </p>
+    </div>
+
+    <a class="btn btn-outline-secondary"
+       href="{{ url_for('inicio') }}">
+        Volver al panel
+    </a>
+</div>
+
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Registrar contratista</h2>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-md-4">
+                <label for="tipo_documento" class="form-label">
+                    Tipo de documento
+                </label>
+
+                <select
+                    class="form-select"
+                    id="tipo_documento"
+                    name="tipo_documento"
+                    required
+                >
+                    <option value="">Seleccione...</option>
+                    <option value="CC">Cédula de ciudadanía</option>
+                    <option value="NIT">NIT</option>
+                    <option value="CE">Cédula de extranjería</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="numero_documento" class="form-label">
+                    Número de documento
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="numero_documento"
+                    name="numero_documento"
+                    required
+                >
+            </div>
+
+            <div class="col-md-4">
+                <label for="nombre_razon_social" class="form-label">
+                    Nombre o razón social
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="nombre_razon_social"
+                    name="nombre_razon_social"
+                    required
+                >
+            </div>
+
+            <div class="col-md-6">
+                <label for="correo" class="form-label">
+                    Correo electrónico
+                </label>
+
+                <input
+                    type="email"
+                    class="form-control"
+                    id="correo"
+                    name="correo"
+                >
+            </div>
+
+            <div class="col-md-6">
+                <label for="telefono" class="form-label">
+                    Teléfono
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="telefono"
+                    name="telefono"
+                >
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-dark">
+                    Registrar contratista
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h2 class="h5 mb-0">
+                Contratistas registrados
+            </h2>
+
+            <span class="badge text-bg-secondary">
+                {{ contratistas|length }} registros
+            </span>
+
+        </div>
+
+
+        {% if contratistas %}
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Documento</th>
+                        <th>Nombre o razón social</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for contratista in contratistas %}
+
+                    <tr>
+
+                        <td>
+                            <span class="badge text-bg-light border">
+                                {{ contratista.tipo_documento }}
+                            </span>
+                        </td>
+
+                        <td class="fw-semibold">
+                            {{ contratista.numero_documento }}
+                        </td>
+
+                        <td>
+                            {{ contratista.nombre_razon_social }}
+                        </td>
+
+                        <td>
+                            {{ contratista.correo or '—' }}
+                        </td>
+
+                        <td>
+                            {{ contratista.telefono or '—' }}
+                        </td>
+
+                        <td class="text-end">
+
+                            <a
+                                class="btn btn-sm btn-outline-dark"
+                                href="{{ url_for(
+                                    'editar_contratista',
+                                    id=contratista.id
+                                ) }}"
+                            >
+                                Editar
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'eliminar_contratista',
+                                    id=contratista.id
+                                ) }}"
+                                class="d-inline"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                >
+                                    Eliminar
+                                </button>
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+            <div class="alert alert-light border mb-0">
+                No hay contratistas registrados.
+            </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

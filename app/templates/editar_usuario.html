@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Editar usuario | SIGEC{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Editar usuario</h1>
+        <p class="text-secondary mb-0">
+            Actualiza la información, el rol y el estado del usuario.
+        </p>
+    </div>
+
+    <a
+        class="btn btn-outline-secondary"
+        href="{{ url_for('usuario_controller.usuarios') }}"
+    >
+        Volver a usuarios
+    </a>
+</div>
+
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-md-6">
+                <label for="nombre" class="form-label">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ usuario.nombre }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="correo" class="form-label">
+                    Correo electrónico
+                </label>
+
+                <input
+                    type="email"
+                    class="form-control"
+                    id="correo"
+                    name="correo"
+                    value="{{ usuario.correo }}"
+                    required
+                >
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="rol_id" class="form-label">
+                    Rol
+                </label>
+
+                <select
+                    class="form-select"
+                    id="rol_id"
+                    name="rol_id"
+                    required
+                >
+
+                    {% for rol in roles %}
+
+                        <option
+                            value="{{ rol.id }}"
+                            {% if rol.id == usuario.rol_id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ rol.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+            </div>
+
+
+            <div class="col-md-6">
+                <label for="estado" class="form-label">
+                    Estado
+                </label>
+
+                <select
+                    class="form-select"
+                    id="estado"
+                    name="estado"
+                    required
+                >
+
+                    <option
+                        value="1"
+                        {% if usuario.estado %}selected{% endif %}
+                    >
+                        Activo
+                    </option>
+
+                    <option
+                        value="0"
+                        {% if not usuario.estado %}selected{% endif %}
+                    >
+                        Inactivo
+                    </option>
+
+                </select>
+            </div>
+
+
+            <div class="col-12 d-flex gap-2 pt-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-dark"
+                >
+                    Guardar cambios
+                </button>
+
+                <a
+                    class="btn btn-outline-secondary"
+                    href="{{ url_for('usuario_controller.usuarios') }}"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

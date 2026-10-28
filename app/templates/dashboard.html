@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Panel principal | SIGEC{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Panel principal</h1>
+    <p class="text-secondary mb-0">
+        Bienvenido, <strong>{{ current_user.nombre }}</strong>. Consulta el estado general de SIGEC.
+    </p>
+</div>
+
+<div class="row g-3 mb-5">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Contratistas</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ total_contratistas }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Contratos</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ total_contratos }}
+                </h2>
+                <small class="text-secondary">
+                    {{ contratos_activos }} activos
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Alertas pendientes</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ alertas_pendientes }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Pagos registrados</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ total_pagos }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Documentos</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ total_documentos }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <p class="text-secondary mb-1">Novedades contractuales</p>
+                <h2 class="display-6 fw-semibold mb-0">
+                    {{ total_novedades }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="h4 mb-1">Módulos</h2>
+        <p class="text-secondary mb-0">
+            Opciones disponibles para el rol {{ current_user.rol.nombre }}.
+        </p>
+    </div>
+
+    <span class="badge text-bg-dark">
+        {{ current_user.rol.nombre }}
+    </span>
+</div>
+
+<div class="row g-3">
+
+    {% if current_user.rol.nombre == "Administrador" %}
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('usuario_controller.usuarios') }}">
+                Gestionar usuarios
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('contratistas') }}">
+                Gestionar contratistas
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('contrato_controller.contratos') }}">
+                Gestionar contratos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('pagos') }}">
+                Gestionar pagos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('documentos') }}">
+                Gestionar documentos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('novedades') }}">
+                Gestionar novedades
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('alertas') }}">
+                Consultar alertas
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('reportes') }}">
+                Generar reportes
+            </a>
+        </div>
+
+
+    {% elif current_user.rol.nombre == "Funcionario" %}
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('contratistas') }}">
+                Gestionar contratistas
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('contrato_controller.contratos') }}">
+                Gestionar contratos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('pagos') }}">
+                Gestionar pagos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('documentos') }}">
+                Gestionar documentos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('novedades') }}">
+                Gestionar novedades
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('alertas') }}">
+                Consultar alertas
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('reportes') }}">
+                Generar reportes
+            </a>
+        </div>
+
+
+    {% elif current_user.rol.nombre == "Supervisor" %}
+
+        <div class="col-md-6 col-xl-4">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('contrato_controller.contratos') }}">
+                Consultar contratos
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('novedades') }}">
+                Consultar novedades
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <a class="btn btn-outline-dark w-100 py-3"
+               href="{{ url_for('alertas') }}">
+                Consultar alertas
+            </a>
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
