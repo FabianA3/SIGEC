@@ -21,7 +21,10 @@ def create_app(configuracion_pruebas=None):
 
     # Configuración básica
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "sigec-clave-desarrollo")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sigec.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///sigec.db"
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
 
