@@ -5,3 +5,4 @@ SQLAlchemy==2.0.55
 Werkzeug==3.1.9
 pytest==8.4.2
 python-dotenv==1.2.1
+gunicorn==23.0.0
